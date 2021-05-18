@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project IQBAL KARIM 21901251</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        $(function(){
+
+            var img = "url(s.jpg)";
+            class Piece {
+                constructor(Xoffset, Yoffset){
+                    this.Xoffset = Xoffset;
+                    this.Yoffset = Yoffset;
+                    this.randX = Math.floor(Math.random() * 201) + "px";
+                    this.randY = Math.floor(Math.random() * 201) + "px";
+                    this.placed = false;
+                    this.placedCorrectly = false;
+                }
+
+                getX(){
+                    return this.Xoffset;
+                }
+                getY(){
+                    return this.Yoffset;
+                }
+                getRandY(){
+                    return this.randY;
+                }
+                getRandX(){
+                    return this.randX;
+                }
+                getRandPos(){
+                    var str = `position : absolute;
+                    left : ` + this.randX + `;
+                    top : ` + this.randY + `;`;
+                    return str;
+                }
+            };
+
+            var Pieces = [new Piece("0px", "0px"), new Piece("-100px", "0px"),new Piece("-200px", "0px"),
+                new Piece("0px", "-100px"),new Piece("-100px", "-100px"),new Piece("-200px", "-100px"),
+                new Piece("0px", "-200px"),new Piece("-100px", "-200px"),new Piece("-200px", "-200px") ];
+            var str = "";
+
+
+            for (i = 1; i < 10; i++){
+                str += `<div id = 'no-`+ i + `' class='piece' style = "` + Pieces[i-1].getRandPos()+ `background : ` + img + ` ` + Pieces[i-1].getX()+ ` ` +Pieces[i-1].getY() + `;"><span>&nbsp;` + i + `</span></div>`;
+            }
+            $("#pieces").html(str);
+            str = "";
+            for (i = 1; i < 10; i++){
+                str += `<div id = 'slot-`+ i + `' class = "empty"><span>&nbsp;` + i + `</span></div>`;
+            }
+            $("#puzzle").html(str);
+
+            var allPieces = $("#pieces > div");
+            var allSlots = $("#puzzle > div");            
+
+            allPieces.click(function(){
+                allPieces.css({"border": "1px solid black", "z-index" : "1"}).removeClass("selected");
+                $(this).css({"border": "1px solid yellow", "z-index" : "2"}).addClass("selected");
+                selected = $(this);
+            });
+
+            allSlots.click(function(){
+                var revert ="";
+                
+                if (selected !=="" && $(this).hasClass("empty")){
+
+                    selected.css({
+                        top : "0px",
+                        left: "0px",
+                        width: "100px",
+                        height: "100px",
+                        border: "1px solid black"
+                    });
+                    
+                    selected.removeClass("selected").addClass($(this).attr("id"));
+                    $(this).html(selected).removeClass("empty").addClass(selected.attr("id"));
+                }
+                else{
+                    revert = $(this).attr("class");
+                    $(this).addClass("empty");
+                    
+                    $("#"+revert).removeClass($(this).attr("id"));
+                    $("#pieces").append($("#"+revert));
+                    $(this).removeClass(revert);
+                    
+                    var id = revert.split("-")[1];
+
+                    if ($("span").css("visibility") === "hidden"){
+                        $(this).html("<span style='visibility : hidden'>" + $(this).attr("id").split("-")[1]+ "</span>");
+                    }
+                    else{
+                        $(this).html("<span style='visibility : visible'>" + $(this).attr("id").split("-")[1]+ "</span>");
+                    };
+
+                    $("#"+revert).css({
+                        border: "1px solid black",
+                        position: "absolute",
+                        left : Pieces[id - 1].getRandX(),
+                        top : Pieces[id - 1].getRandY()
+                    });
+                };
+                checkCompletion();
+                allPieces = $("#pieces > div");
+                selected = "";
+            });
+
+
+            function checkCompletion(){
+                {   
+                    var c = "", id = "";
+                    var check = 0;
+                    var p = $(".piece");
+                    //console.log(p[5]);
+                    for (i = 0; i < 9; i++){
+                        c = $(p[i]).attr("class").split("-")[1];
+                        id = $(p[i]).attr("id").split("-")[1];
+                        if (c === id){
+                            console.log(c, id);
+                            check++;
+                        }
+                    }
+                    if (check === 9){
+                        console.log("puzzle solved");
+                        $("#message").css("visibility", "visible");
+                    }
+                }
+            }
+        });
+            function showHints(){
+                if ($("span").css("visibility") === "hidden"){
+                    $("span").css("visibility", "visible");
+                }else{
+                    $("span").css("visibility", "hidden");
+                }
+            }
+        
+        
+
+
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+        *{
+            font-family: 'Audiowide', cursive;
+        }
+        #main{
+            display: flex;
+            justify-content: space-around;
+        }
+        #image{
+            background: url(s.jpg);
+            width: 300px;
+            height: 300px;
+            border: 1px solid black;
+        }
+        #pieces{
+            background: rgba(155, 26, 26, 0.952);
+            width: 300px;
+            height: 300px;
+            border: 1px solid black;
+            position: relative;
+        }
+        #puzzle{
+            width: 306px;
+            height: 306px;
+            border: 1px solid black;
+            position: relative;
+        }
+        #but{
+            text-align: center;
+        }
+        input{
+            margin: 20px auto;
+            background: rgba(170, 79, 212, 0.952);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 25px;
+        }
+        input:hover{
+            border: 2px solid white;
+            background-color: black;
+            color: white;
+        }
+        h1{
+            text-align: center;
+        }
+
+        #puzzle > div{
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            float: left;
+        }
+        #pieces > div{
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+        }
+        span{
+            position: absolute;
+            background-color: rgba(200, 200, 200, 1);   
+            bottom: 0px;
+            width: 25px;
+            visibility: hidden;
+        }
+        #message{
+            background: chocolate;
+            margin: 50px auto;
+            line-height: 60px;
+            position: relative;
+            top: -350px;
+            border: 3px solid white;
+            z-index: 3;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="main">
+        
+        <div>
+            <h1>Original Image</h1>
+            <div id="image"></div>
+        </div>
+    
+        <div>
+            <h1>Pieces</h1>
+            <div id="pieces"></div>
+        </div>
+    
+        <div>
+            <h1>Puzzle</h1>
+            <div id="puzzle"></div>
+        </div>
+
+    </div>
+
+    <div id="but"><input type="button" value="Hints" onclick="showHints()"></div>
+
+    <div id="message">
+            <h1>CONGRATULATIONS!! YOU HAVE SOLVED THE PUZZLE</h1>
+    </div>
+</body>
+</html>
